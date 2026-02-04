@@ -1,11 +1,21 @@
 import core.Algorithm;
 import core.Problem;
 import core.Solution;
+
+import javax.swing.SwingUtilities;
+
 import algorithms.*;
 import problems.*;
+import visualization.MainFrame;
 
 public class Main {
     public static void main(String[] args) {
+
+        SwingUtilities.invokeLater(() -> {
+            MainFrame frame = new MainFrame();
+            frame.setVisible(true);
+        });
+
         System.out.println("╔════════════════════════════════════════════════════════════════════╗");
         System.out.println("║          Swarm Algorithm Visualizer - Console Tests               ║");
         System.out.println("╚════════════════════════════════════════════════════════════════════╝\n");
