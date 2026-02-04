@@ -6,44 +6,59 @@ import problems.*;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Swarm Algorithm Visualizer - Console Tests\n");
+        System.out.println("╔════════════════════════════════════════════════════════════════════╗");
+        System.out.println("║          Swarm Algorithm Visualizer - Console Tests               ║");
+        System.out.println("╚════════════════════════════════════════════════════════════════════╝\n");
         
-        // Test problem
+        // Test on Rastrigin (good for showing swarm behavior)
         Problem problem = new Rastrigin(2);
         
-        // Create algorithms
+        System.out.println("Testing Problem: " + problem.getName());
+        System.out.println("Global Optimum: f(0, 0) = 0\n");
+        
+        // Create all algorithms
         Algorithm[] algorithms = {
-            new RandomSearch(100, 20),
-            new HillClimber(100, 1.0),
-            new SimulatedAnnealing(100, 100.0, 0.95, 1.0),
-            new StochasticLocalSearch(100, 10, 1.0)
+            new RandomSearch(150, 30),
+            new HillClimber(150, 1.0),
+            new SimulatedAnnealing(150, 100.0, 0.95, 1.0),
+            new StochasticLocalSearch(150, 10, 1.0),
+            new ParticleSwarmOptimization(150, 30),
+            new GeneticAlgorithm(150, 40),
+            new DifferentialEvolution(150, 40),
+            new AntColonyOptimization(150, 30)
         };
         
         // Test each algorithm
         for (Algorithm algo : algorithms) {
             testAlgorithm(algo, problem);
         }
+        
+        System.out.println("╔════════════════════════════════════════════════════════════════════╗");
+        System.out.println("║                      All Tests Complete!                          ║");
+        System.out.println("╚════════════════════════════════════════════════════════════════════╝");
     }
     
     private static void testAlgorithm(Algorithm algorithm, Problem problem) {
-        System.out.println("=".repeat(70));
-        System.out.println("Algorithm: " + algorithm.getName());
-        System.out.println("Problem: " + problem.getName());
-        System.out.println("=".repeat(70));
+        System.out.println("┌" + "─".repeat(68) + "┐");
+        System.out.println("│ " + String.format("%-66s", algorithm.getName()) + " │");
+        System.out.println("└" + "─".repeat(68) + "┘");
         
         algorithm.initialize(problem);
         
+        int reportInterval = 30;
         while (algorithm.step()) {
-            if (algorithm.getIteration() % 20 == 0) {
+            if (algorithm.getIteration() % reportInterval == 0) {
                 Solution best = algorithm.getBestSolution();
-                System.out.printf("Iteration %3d: Best Fitness = %.6f\n", 
+                System.out.printf("  Iter %3d: Fitness = %.8f\n", 
                     algorithm.getIteration(), best.getFitness());
             }
         }
         
         Solution finalBest = algorithm.getBestSolution();
-        System.out.println("\nFinal Result:");
-        System.out.println(finalBest);
+        System.out.println("\n  ✓ Final Result:");
+        System.out.printf("    Position: [%.6f, %.6f]\n", 
+            finalBest.getPosition()[0], finalBest.getPosition()[1]);
+        System.out.printf("    Fitness:  %.8f\n", finalBest.getFitness());
         System.out.println();
     }
 }
