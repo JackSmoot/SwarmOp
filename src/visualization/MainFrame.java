@@ -10,6 +10,8 @@ public class MainFrame extends JFrame implements ControlPanel.ControlListener {
     private ControlPanel controlPanel;
     private Timer timer;
     private boolean running = false;
+    private Algorithm currentAlgorithm;
+    private Problem currentProblem;
     
     public MainFrame() {
         setTitle("Swarm Algorithm Visualizer");
@@ -34,6 +36,15 @@ public class MainFrame extends JFrame implements ControlPanel.ControlListener {
     
     @Override
     public void onStart() {
+        if (currentAlgorithm == null || currentProblem == null) {
+            return;
+        }
+        
+        // Initialize if not already done
+        if (currentAlgorithm.getIteration() == 0) {
+            currentAlgorithm.initialize(currentProblem);
+        }
+        
         running = true;
         timer.start();
         controlPanel.setRunning(true);
@@ -49,25 +60,52 @@ public class MainFrame extends JFrame implements ControlPanel.ControlListener {
     @Override
     public void onReset() {
         onPause();
-        if (visualizationPanel != null) {
+        if (currentAlgorithm != null && currentProblem != null) {
+            currentAlgorithm.reset();
+            currentAlgorithm.initialize(currentProblem);
             visualizationPanel.repaint();
         }
     }
     
     @Override
     public void onStep() {
-        step();
+        if (currentAlgorithm == null || currentProblem == null) {
+            return;
+        }
+        
+        // Initialize if not already done
+        if (currentAlgorithm.getIteration() == 0) {
+            currentAlgorithm.initialize(currentProblem);
+        }
+        
+        // Perform one step
+        currentAlgorithm.step();
+        visualizationPanel.repaint();
     }
     
     @Override
     public void onAlgorithmChanged(Algorithm algorithm) {
+        onPause();
+        currentAlgorithm = algorithm;
         visualizationPanel.setAlgorithm(algorithm);
+        
+        if (currentProblem != null) {
+            currentAlgorithm.initialize(currentProblem);
+        }
+        
         visualizationPanel.repaint();
     }
     
     @Override
     public void onProblemChanged(Problem problem) {
+        onPause();
+        currentProblem = problem;
         visualizationPanel.setProblem(problem);
+        
+        if (currentAlgorithm != null) {
+            currentAlgorithm.initialize(currentProblem);
+        }
+        
         visualizationPanel.repaint();
     }
     
@@ -83,7 +121,15 @@ public class MainFrame extends JFrame implements ControlPanel.ControlListener {
     }
     
     private void step() {
-        visualizationPanel.repaint();
+        if (currentAlgorithm != null) {
+            boolean continuing = currentAlgorithm.step();
+            visualizationPanel.repaint();
+            
+            // Stop if algorithm is done
+            if (!continuing) {
+                onPause();
+            }
+        }
     }
     
     public static void main(String[] args) {

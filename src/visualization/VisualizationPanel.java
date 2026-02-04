@@ -131,7 +131,7 @@ public class VisualizationPanel extends JPanel {
             
             // Draw solution point
             g2d.setColor(new Color(0, 255, 200, 180));
-            int size = 8;
+            int size = 4;
             g2d.fillOval((int)point.x - size/2, (int)point.y - size/2, size, size);
             
             // Draw glow
