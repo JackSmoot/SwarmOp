@@ -74,7 +74,12 @@ public class ControlPanel extends JPanel {
         String[] problems = {
             "Sphere",
             "Rastrigin",
-            "Ackley"
+            "Ackley",
+            "Schwefel",
+            "Griewank",
+            "Michalewicz",
+            "Levy",
+            "Deceptive Trap"
         };
         problemCombo = createComboBox(problems);
         problemCombo.addActionListener(e -> updateProblem());
@@ -232,6 +237,21 @@ public class ControlPanel extends JPanel {
                 break;
             case "Ackley":
                 currentProblem = new Ackley(2);
+                break;
+            case "Schwefel":
+                currentProblem = new Schwefel(2);
+                break;
+            case "Griewank":
+                currentProblem = new Griewank(2);
+                break;
+            case "Michalewicz":
+                currentProblem = new Michalewicz(2);
+                break;
+            case "Levy":
+                currentProblem = new Levy(2);
+                break;
+            case "Deceptive Trap":
+                currentProblem = new DeceptiveTrap(2);
                 break;
         }
         

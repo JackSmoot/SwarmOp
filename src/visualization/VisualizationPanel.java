@@ -87,6 +87,9 @@ public class VisualizationPanel extends JPanel {
             drawHeatmap(g2d);
         }
         
+       // Draw global optimum marker
+        drawGlobalOptimum(g2d);
+        
         // Draw solutions
         drawSolutions(g2d);
         
@@ -160,6 +163,53 @@ public class VisualizationPanel extends JPanel {
         g2d.setColor(new Color(255, 255, 0, 80));
         g2d.fillOval((int)point.x - size, (int)point.y - size, size*2, size*2);
     }
+
+    private void drawGlobalOptimum(Graphics2D g2d) {
+        // Get the known global optimum position for this problem
+        double[] optimumPos = getGlobalOptimumPosition();
+        if (optimumPos == null) return;
+        
+        Point2D.Double point = toScreenCoordinates(optimumPos);
+        
+        // Draw a green crosshair marker
+        g2d.setColor(new Color(0, 255, 0, 150));
+        g2d.setStroke(new BasicStroke(2));
+        
+        int size = 12;
+        // Horizontal line
+        g2d.drawLine((int)point.x - size, (int)point.y, (int)point.x + size, (int)point.y);
+        // Vertical line
+        g2d.drawLine((int)point.x, (int)point.y - size, (int)point.x, (int)point.y + size);
+        
+        // Draw circle around it
+        g2d.setColor(new Color(0, 255, 0, 100));
+        g2d.drawOval((int)point.x - 8, (int)point.y - 8, 16, 16);
+    }
+    
+    private double[] getGlobalOptimumPosition() {
+        if (problem == null) return null;
+        
+        String problemName = problem.getName();
+        switch (problemName) {
+            case "Sphere Function":
+            case "Rastrigin Function":
+            case "Ackley Function":
+            case "Griewank Function":
+                return new double[]{0.0, 0.0};
+            case "Schwefel Function":
+                return new double[]{420.9687, 420.9687};
+            case "Michalewicz Function":
+                return new double[]{2.20, 1.57};
+            case "Levy Function":
+                return new double[]{1.0, 1.0};
+            case "Deceptive Trap":
+                // For deceptive trap, the optimum is at the boundary
+                // Let's show one of them
+                return new double[]{5.0, 5.0};
+            default:
+                return null;
+        }
+    }
     
     private void drawInfo(Graphics2D g2d) {
         g2d.setColor(Color.WHITE);
@@ -183,14 +233,58 @@ public class VisualizationPanel extends JPanel {
                 best.getPosition()[0], best.getPosition()[1]), x, y);
         }
         
-        // Draw legend for global optimum
+        // Draw problem-specific optimum info
         y += 30;
         g2d.setFont(new Font("Monospaced", Font.PLAIN, 12));
-        g2d.drawString("Global Optimum: (0.0, 0.0)", x, y);
-        y += 15;
-        g2d.drawString("Target Fitness: 0.0", x, y);
+        g2d.setColor(new Color(100, 255, 100));
+        
+        String problemName = problem.getName();
+        switch (problemName) {
+            case "Sphere Function":
+                g2d.drawString("Global Optimum: (0.0, 0.0)", x, y);
+                y += 15;
+                g2d.drawString("Target Fitness: 0.0", x, y);
+                break;
+            case "Rastrigin Function":
+                g2d.drawString("Global Optimum: (0.0, 0.0)", x, y);
+                y += 15;
+                g2d.drawString("Target Fitness: 0.0", x, y);
+                break;
+            case "Ackley Function":
+                g2d.drawString("Global Optimum: (0.0, 0.0)", x, y);
+                y += 15;
+                g2d.drawString("Target Fitness: 0.0", x, y);
+                break;
+            case "Schwefel Function":
+                g2d.drawString("Global Optimum: (420.97, 420.97)", x, y);
+                y += 15;
+                g2d.drawString("Target Fitness: 0.0", x, y);
+                break;
+            case "Griewank Function":
+                g2d.drawString("Global Optimum: (0.0, 0.0)", x, y);
+                y += 15;
+                g2d.drawString("Target Fitness: 0.0", x, y);
+                break;
+            case "Michalewicz Function":
+                g2d.drawString("Global Optimum: ~(2.20, 1.57)", x, y);
+                y += 15;
+                g2d.drawString("Target Fitness: ~-1.80", x, y);
+                break;
+            case "Levy Function":
+                g2d.drawString("Global Optimum: (1.0, 1.0)", x, y);
+                y += 15;
+                g2d.drawString("Target Fitness: 0.0", x, y);
+                break;
+            case "Deceptive Trap":
+                g2d.drawString("Global Optimum: at boundaries", x, y);
+                y += 15;
+                g2d.drawString("(±5.0, ±5.0)", x, y);
+                break;
+            default:
+                g2d.drawString("See problem definition", x, y);
+                break;
+        }
     }
-    
     private Point2D.Double toScreenCoordinates(double[] position) {
         if (position.length < 2) return new Point2D.Double(0, 0);
         
